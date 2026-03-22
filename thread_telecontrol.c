@@ -9,7 +9,12 @@
 uint8_t test[5] = {1,2,3,4,5};
 void msghanler(message *msg,void *context)
 {
-    context = msg->priv;
+    void **temp = context;//temp为执行context的地址指针
+
+    if(temp != NULL)
+    {
+        *temp = msg->priv;
+    }
 }
 
 static subscriber test_sub = {
@@ -21,7 +26,7 @@ static subscriber test_sub = {
 
 static message test_msg = 
 {
-    .data_len = 2,
+    .data_len = 5,
     .link.next = NULL,
     .link.prev = NULL,
     .priv = test,
@@ -31,6 +36,7 @@ int main()
 {
 
     notify_bus_register();
+
     message_publish(&telecontrol,&test_msg,"test");
 
     message_subscribe(&telecontrol,&test_sub,"test",msghanler,NULL);
